@@ -12,6 +12,7 @@
 		28EA52131B067409006DC1A7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28EA52121B067409006DC1A7 /* Images.xcassets */; };
 		28EA52161B067409006DC1A7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28EA52141B067409006DC1A7 /* LaunchScreen.xib */; };
 		28EA52221B067409006DC1A7 /* BikeNowTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EA52211B067409006DC1A7 /* BikeNowTests.m */; };
+		28EA522D1B06776C006DC1A7 /* BikeNowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EA522C1B06776C006DC1A7 /* BikeNowViewController.m */; };
 		77DD13268DCA9563702CCB90 /* libPods-BikeNow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE27BFDB9822B66D337A6F1C /* libPods-BikeNow.a */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,8 @@
 		28EA521B1B067409006DC1A7 /* BikeNowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BikeNowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28EA52201B067409006DC1A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28EA52211B067409006DC1A7 /* BikeNowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BikeNowTests.m; sourceTree = "<group>"; };
+		28EA522B1B06776C006DC1A7 /* BikeNowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BikeNowViewController.h; sourceTree = "<group>"; };
+		28EA522C1B06776C006DC1A7 /* BikeNowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BikeNowViewController.m; sourceTree = "<group>"; };
 		34E7BD40836AEBF67F32A7A2 /* Pods-BikeNow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BikeNow.release.xcconfig"; path = "Pods/Target Support Files/Pods-BikeNow/Pods-BikeNow.release.xcconfig"; sourceTree = "<group>"; };
 		416B84C549FB7DA7741A03E3 /* Pods-BikeNow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BikeNow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BikeNow/Pods-BikeNow.debug.xcconfig"; sourceTree = "<group>"; };
 		DE27BFDB9822B66D337A6F1C /* libPods-BikeNow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BikeNow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,6 +97,8 @@
 			children = (
 				28EA520F1B067409006DC1A7 /* AppDelegate.h */,
 				28EA52101B067409006DC1A7 /* AppDelegate.m */,
+				28EA522B1B06776C006DC1A7 /* BikeNowViewController.h */,
+				28EA522C1B06776C006DC1A7 /* BikeNowViewController.m */,
 				28EA52121B067409006DC1A7 /* Images.xcassets */,
 				28EA52141B067409006DC1A7 /* LaunchScreen.xib */,
 				28EA520B1B067409006DC1A7 /* Supporting Files */,
@@ -270,6 +275,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				28EA52111B067409006DC1A7 /* AppDelegate.m in Sources */,
+				28EA522D1B06776C006DC1A7 /* BikeNowViewController.m in Sources */,
 				28EA520E1B067409006DC1A7 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
