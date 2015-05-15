@@ -107,11 +107,11 @@
 				28EA522F1B0677D3006DC1A7 /* BikeNowView.m */,
 				28EA522B1B06776C006DC1A7 /* BikeNowViewController.h */,
 				28EA522C1B06776C006DC1A7 /* BikeNowViewController.m */,
+				285EC0371B0680EE006EE232 /* BikeStation.h */,
+				285EC0381B0680EE006EE232 /* BikeStation.m */,
 				28EA52121B067409006DC1A7 /* Images.xcassets */,
 				28EA52141B067409006DC1A7 /* LaunchScreen.xib */,
 				28EA520B1B067409006DC1A7 /* Supporting Files */,
-				285EC0371B0680EE006EE232 /* BikeStation.h */,
-				285EC0381B0680EE006EE232 /* BikeStation.m */,
 			);
 			path = BikeNow;
 			sourceTree = "<group>";
