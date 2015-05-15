@@ -9,8 +9,10 @@
 #import "BikeNowViewController.h"
 
 @import CoreLocation;
+@import MapKit;
 
-@interface BikeNowViewController ()
+@interface BikeNowViewController () <CLLocationManagerDelegate>
+@property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CLLocationManager *locationManager;
 @end
 
@@ -23,6 +25,7 @@
     self.view.backgroundColor = [UIColor redColor];
     
     self.locationManager = [CLLocationManager new];
+    self.locationManager.delegate = self;
 
     switch ([CLLocationManager authorizationStatus]) {
         case kCLAuthorizationStatusNotDetermined: {
@@ -36,7 +39,7 @@
         }
         case kCLAuthorizationStatusAuthorizedWhenInUse:
         case kCLAuthorizationStatusAuthorizedAlways: {
-            [self _fetchNearestStation];
+            [self _fetchLocationAndNearestStation];
             break;
         }
         default: {
@@ -47,7 +50,7 @@
 
 - (void)_requestLocationPermission
 {
-    
+    [self.locationManager startUpdatingLocation];
 }
 
 - (void)_showLocationServicesDeniedPrompt
@@ -55,9 +58,16 @@
     
 }
 
-- (void)_fetchNearestStation
+- (void)_fetchLocationAndNearestStation
 {
     
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    self.currentLocation = [locations lastObject];
 }
 
 @end

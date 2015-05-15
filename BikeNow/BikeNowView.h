@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@import MapKit;
+
 @interface BikeNowView : UIView
 
 @end
