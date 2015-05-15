@@ -8,6 +8,11 @@
 
 #import "BikeNowViewController.h"
 
+static NSString *stationNYCURL = @"http://www.citibikenyc.com/stations/json";
+static NSString *stationChicagoURL = @"http://www.divvybikes.com/stations/json";
+static NSString *stationSFURL = @"http://www.bayareabikeshare.com/stations/json";
+static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/v1";
+
 @import CoreLocation;
 @import MapKit;
 
@@ -50,7 +55,7 @@
 
 - (void)_requestLocationPermission
 {
-    [self.locationManager startUpdatingLocation];
+    [self.locationManager requestWhenInUseAuthorization];
 }
 
 - (void)_showLocationServicesDeniedPrompt
@@ -60,14 +65,38 @@
 
 - (void)_fetchLocationAndNearestStation
 {
+    [self.locationManager startUpdatingLocation];
     
 }
 
 #pragma mark - CLLocationManagerDelegate
 
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    switch (status) {
+        case kCLAuthorizationStatusAuthorizedAlways:
+        case kCLAuthorizationStatusAuthorizedWhenInUse: {
+            [manager startUpdatingLocation];
+            break;
+        }
+        case kCLAuthorizationStatusDenied:
+        case kCLAuthorizationStatusRestricted: {
+            [self _showLocationServicesDeniedPrompt];
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     self.currentLocation = [locations lastObject];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    
 }
 
 @end
