@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		285EC0391B0680EE006EE232 /* BikeStation.m in Sources */ = {isa = PBXBuildFile; fileRef = 285EC0381B0680EE006EE232 /* BikeStation.m */; };
 		28EA520E1B067409006DC1A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EA520D1B067409006DC1A7 /* main.m */; };
 		28EA52111B067409006DC1A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EA52101B067409006DC1A7 /* AppDelegate.m */; };
 		28EA52131B067409006DC1A7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28EA52121B067409006DC1A7 /* Images.xcassets */; };
@@ -28,6 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		285EC0371B0680EE006EE232 /* BikeStation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BikeStation.h; sourceTree = "<group>"; };
+		285EC0381B0680EE006EE232 /* BikeStation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BikeStation.m; sourceTree = "<group>"; };
 		28EA52081B067409006DC1A7 /* BikeNow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BikeNow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28EA520C1B067409006DC1A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28EA520D1B067409006DC1A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -107,6 +110,8 @@
 				28EA52121B067409006DC1A7 /* Images.xcassets */,
 				28EA52141B067409006DC1A7 /* LaunchScreen.xib */,
 				28EA520B1B067409006DC1A7 /* Supporting Files */,
+				285EC0371B0680EE006EE232 /* BikeStation.h */,
+				285EC0381B0680EE006EE232 /* BikeStation.m */,
 			);
 			path = BikeNow;
 			sourceTree = "<group>";
@@ -281,6 +286,7 @@
 			files = (
 				28EA52111B067409006DC1A7 /* AppDelegate.m in Sources */,
 				28EA522D1B06776C006DC1A7 /* BikeNowViewController.m in Sources */,
+				285EC0391B0680EE006EE232 /* BikeStation.m in Sources */,
 				28EA52301B0677D4006DC1A7 /* BikeNowView.m in Sources */,
 				28EA520E1B067409006DC1A7 /* main.m in Sources */,
 			);
