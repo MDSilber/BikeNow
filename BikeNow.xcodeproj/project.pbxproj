@@ -12,6 +12,7 @@
 		28EA52131B067409006DC1A7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28EA52121B067409006DC1A7 /* Images.xcassets */; };
 		28EA52161B067409006DC1A7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28EA52141B067409006DC1A7 /* LaunchScreen.xib */; };
 		28EA52221B067409006DC1A7 /* BikeNowTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EA52211B067409006DC1A7 /* BikeNowTests.m */; };
+		77DD13268DCA9563702CCB90 /* libPods-BikeNow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE27BFDB9822B66D337A6F1C /* libPods-BikeNow.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,9 @@
 		28EA521B1B067409006DC1A7 /* BikeNowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BikeNowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28EA52201B067409006DC1A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28EA52211B067409006DC1A7 /* BikeNowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BikeNowTests.m; sourceTree = "<group>"; };
+		34E7BD40836AEBF67F32A7A2 /* Pods-BikeNow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BikeNow.release.xcconfig"; path = "Pods/Target Support Files/Pods-BikeNow/Pods-BikeNow.release.xcconfig"; sourceTree = "<group>"; };
+		416B84C549FB7DA7741A03E3 /* Pods-BikeNow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BikeNow.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BikeNow/Pods-BikeNow.debug.xcconfig"; sourceTree = "<group>"; };
+		DE27BFDB9822B66D337A6F1C /* libPods-BikeNow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BikeNow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77DD13268DCA9563702CCB90 /* libPods-BikeNow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,12 +60,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0436F084C5B71FCCD9F0406B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				416B84C549FB7DA7741A03E3 /* Pods-BikeNow.debug.xcconfig */,
+				34E7BD40836AEBF67F32A7A2 /* Pods-BikeNow.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		28EA51FF1B067409006DC1A7 = {
 			isa = PBXGroup;
 			children = (
 				28EA520A1B067409006DC1A7 /* BikeNow */,
 				28EA521E1B067409006DC1A7 /* BikeNowTests */,
 				28EA52091B067409006DC1A7 /* Products */,
+				0436F084C5B71FCCD9F0406B /* Pods */,
+				6A1B0FC0AC59650EA18FB698 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,6 +127,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		6A1B0FC0AC59650EA18FB698 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DE27BFDB9822B66D337A6F1C /* libPods-BikeNow.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -118,9 +142,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 28EA52251B067409006DC1A7 /* Build configuration list for PBXNativeTarget "BikeNow" */;
 			buildPhases = (
+				1D7BA8A1BE57A3781E6D2055 /* Check Pods Manifest.lock */,
 				28EA52041B067409006DC1A7 /* Sources */,
 				28EA52051B067409006DC1A7 /* Frameworks */,
 				28EA52061B067409006DC1A7 /* Resources */,
+				38F92C5DF16AD7988D39211B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -204,6 +230,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1D7BA8A1BE57A3781E6D2055 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		38F92C5DF16AD7988D39211B /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BikeNow/Pods-BikeNow-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		28EA52041B067409006DC1A7 /* Sources */ = {
@@ -327,6 +386,7 @@
 		};
 		28EA52261B067409006DC1A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 416B84C549FB7DA7741A03E3 /* Pods-BikeNow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BikeNow/Info.plist;
@@ -337,6 +397,7 @@
 		};
 		28EA52271B067409006DC1A7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34E7BD40836AEBF67F32A7A2 /* Pods-BikeNow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BikeNow/Info.plist;
@@ -398,6 +459,7 @@
 				28EA52271B067409006DC1A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		28EA52281B067409006DC1A7 /* Build configuration list for PBXNativeTarget "BikeNowTests" */ = {
 			isa = XCConfigurationList;
@@ -406,6 +468,7 @@
 				28EA522A1B067409006DC1A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
