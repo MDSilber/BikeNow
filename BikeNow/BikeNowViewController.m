@@ -51,7 +51,7 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
         }
         case kCLAuthorizationStatusAuthorizedWhenInUse:
         case kCLAuthorizationStatusAuthorizedAlways: {
-            [self _fetchLocationAndNearestStation];
+            [self _fetchLocation];
             break;
         }
         default: {
@@ -70,15 +70,37 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     
 }
 
-- (void)_fetchLocationAndNearestStation
+- (void)_fetchLocation
 {
     [self.locationManager startUpdatingLocation];
     
 }
 
-- (void)_fetchStations
+- (void)_fetchStationsForCity:(StationCity)city
 {
+    NSString *url = [self _urlForCity:city];
+    
+    // No city
+    if (!url) {
+        return;
+    } else {
+        __weak typeof(self) weakSelf = self;
+        [self.requestManager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [weakSelf _handleSuccessfulResponse:responseObject];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            [weakSelf _handleErrorResponse:error];
+        }];
+    }
+}
 
+- (void)_handleSuccessfulResponse:(id)responseObject
+{
+    
+}
+
+- (void)_handleErrorResponse:(NSError *)error
+{
+    
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -105,6 +127,7 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 {
     self.currentLocation = [locations lastObject];
     self.userCity = [self _closestCityToCoordinate:self.currentLocation.coordinate];
+    [self _fetchStationsForCity:self.userCity];
 
     [manager stopUpdatingLocation];
 }
@@ -115,6 +138,22 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 }
 
 #pragma mark - Helper methods
+
+- (NSString *)_urlForCity:(StationCity)city
+{
+    switch (city) {
+        case StationCityNYC:
+            return stationNYCURL;
+        case StationCityPhiladelphia:
+            return stationPhillyURL;
+        case StationCitySF:
+            return stationSFURL;
+        case StationCityChicago:
+            return stationChicagoURL;
+        default:
+            return nil;
+    }
+}
 
 - (StationCity)_closestCityToCoordinate:(CLLocationCoordinate2D)coordinate
 {
