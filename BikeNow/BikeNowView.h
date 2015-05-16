@@ -10,6 +10,9 @@
 
 @import MapKit;
 
-@interface BikeNowView : UIView
+@protocol BikeNowViewDelegate <MKMapViewDelegate>
+@end
 
+@interface BikeNowView : UIView
+@property (nonatomic, weak) id<BikeNowViewDelegate> delegate;
 @end

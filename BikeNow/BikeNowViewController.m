@@ -8,6 +8,7 @@
 
 #import <AFNetworking/AFNetworking.h>
 #import "BikeNowViewController.h"
+#import "BikeNowView.h"
 #import "BikeStation.h"
 
 static NSString *stationNYCURL = @"http://www.citibikenyc.com/stations/json";
@@ -18,7 +19,8 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 @import CoreLocation;
 @import MapKit;
 
-@interface BikeNowViewController () <CLLocationManagerDelegate>
+@interface BikeNowViewController () <CLLocationManagerDelegate, BikeNowViewDelegate>
+@property (nonatomic) BikeNowView *bikeNowView;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) AFHTTPRequestOperationManager *requestManager;
@@ -27,17 +29,33 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 @implementation BikeNowViewController
 
+- (void)dealloc
+{
+    self.bikeNowView.delegate = nil;
+}
+
+- (void)loadView
+{
+    self.bikeNowView = [BikeNowView new];
+    self.bikeNowView.delegate = self;
+    self.view = self.bikeNowView;
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    self.bikeNowView.frame = self.bikeNowView.window.bounds;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor redColor];
     self.userCity = StationCityUnknown;
+    self.requestManager = [AFHTTPRequestOperationManager new];
 
     self.locationManager = [CLLocationManager new];
     self.locationManager.delegate = self;
-
-    self.requestManager = [AFHTTPRequestOperationManager new];
 
     switch ([CLLocationManager authorizationStatus]) {
         case kCLAuthorizationStatusNotDetermined: {
@@ -136,6 +154,8 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 {
     
 }
+
+#pragma mark - BikeNowViewDelegate
 
 #pragma mark - Helper methods
 
