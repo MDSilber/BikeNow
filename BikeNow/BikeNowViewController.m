@@ -6,7 +6,9 @@
 //  Copyright (c) 2015 Mason Silber. All rights reserved.
 //
 
+#import <AFNetworking/AFNetworking.h>
 #import "BikeNowViewController.h"
+#import "BikeStation.h"
 
 static NSString *stationNYCURL = @"http://www.citibikenyc.com/stations/json";
 static NSString *stationChicagoURL = @"http://www.divvybikes.com/stations/json";
@@ -19,6 +21,8 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 @interface BikeNowViewController () <CLLocationManagerDelegate>
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) AFHTTPRequestOperationManager *requestManager;
+@property (nonatomic) StationCity userCity;
 @end
 
 @implementation BikeNowViewController
@@ -28,9 +32,12 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor redColor];
-    
+    self.userCity = StationCityUnknown;
+
     self.locationManager = [CLLocationManager new];
     self.locationManager.delegate = self;
+
+    self.requestManager = [AFHTTPRequestOperationManager new];
 
     switch ([CLLocationManager authorizationStatus]) {
         case kCLAuthorizationStatusNotDetermined: {
@@ -69,6 +76,11 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     
 }
 
+- (void)_fetchStations
+{
+
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
@@ -92,11 +104,70 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     self.currentLocation = [locations lastObject];
+    self.userCity = [self _closestCityToCoordinate:self.currentLocation.coordinate];
+
+    [manager stopUpdatingLocation];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     
+}
+
+#pragma mark - Helper methods
+
+- (StationCity)_closestCityToCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    NSNumber *distanceToNYC = @([self _distanceBetweenCoordinate:coordinate andCoordinate:[self _newYorkCoordinate]]);
+    NSNumber *distanceToPhialdelphia = @([self _distanceBetweenCoordinate:coordinate andCoordinate:[self _philadelphiaCoordinate]]);
+    NSNumber *distanceToSF = @([self _distanceBetweenCoordinate:coordinate andCoordinate:[self _sanFranciscoCoordinate]]);
+    NSNumber *distanceToChicago = @([self _distanceBetweenCoordinate:coordinate andCoordinate:[self _chicagoCoordinate]]);
+    
+    NSArray *distances = @[distanceToNYC, distanceToPhialdelphia, distanceToSF, distanceToChicago];
+    NSNumber *minDistance = [NSNumber numberWithInteger:INT32_MAX];
+    
+    for (NSNumber *distance in distances) {
+        if ([distance doubleValue] < [minDistance doubleValue]) {
+            minDistance = distance;
+        }
+    }
+    
+    if ([minDistance isEqualToNumber:distanceToNYC]) {
+        return StationCityNYC;
+    } else if ([minDistance isEqualToNumber:distanceToPhialdelphia]) {
+        return StationCityPhiladelphia;
+    } else if ([minDistance isEqualToNumber:distanceToSF]) {
+        return StationCitySF;
+    } else if ([minDistance isEqualToNumber:distanceToChicago]) {
+        return StationCityChicago;
+    } else {
+        return StationCityUnknown;
+    }
+}
+
+- (double)_distanceBetweenCoordinate:(CLLocationCoordinate2D)firstCoordinate andCoordinate:(CLLocationCoordinate2D)secondCoordinate
+{
+    return sqrt(pow(firstCoordinate.latitude - secondCoordinate.latitude, 2) + pow(firstCoordinate.longitude + secondCoordinate.longitude, 2));
+}
+
+- (CLLocationCoordinate2D)_philadelphiaCoordinate
+{
+    return CLLocationCoordinate2DMake(0, 0);
+}
+
+- (CLLocationCoordinate2D)_newYorkCoordinate
+{
+    return CLLocationCoordinate2DMake(0, 0);
+}
+
+- (CLLocationCoordinate2D)_sanFranciscoCoordinate
+{
+    return CLLocationCoordinate2DMake(0, 0);
+}
+
+- (CLLocationCoordinate2D)_chicagoCoordinate
+{
+    return CLLocationCoordinate2DMake(0, 0);
 }
 
 @end
