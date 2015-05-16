@@ -157,6 +157,11 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 #pragma mark - BikeNowViewDelegate
 
+- (void)bikeNowViewShouldReload:(BikeNowView *)bikeNowView
+{
+    
+}
+
 #pragma mark - Helper methods
 
 - (NSString *)_urlForCity:(StationCity)city

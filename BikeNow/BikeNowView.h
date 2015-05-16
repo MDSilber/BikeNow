@@ -10,7 +10,10 @@
 
 @import MapKit;
 
+@class BikeNowView;
+
 @protocol BikeNowViewDelegate <MKMapViewDelegate>
+- (void)bikeNowViewShouldReload:(BikeNowView *)bikeNowView;
 @end
 
 @interface BikeNowView : UIView
