@@ -132,10 +132,31 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     }
     
     self.bikeStations = [stations sortedArrayUsingComparator:^NSComparisonResult(BikeStation *obj1, BikeStation *obj2) {
-        return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate])];
+        return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate])];
     }];
     
     [self.bikeNowView updateWithStations:self.bikeStations location:self.locationManager.location];
+    [self _getDirections];
+}
+
+- (void)_getDirections
+{
+    MKDirectionsRequest *directionsRequest = [MKDirectionsRequest new];
+    MKPlacemark *destination = [[MKPlacemark alloc] initWithCoordinate:((BikeStation *)[self.bikeStations lastObject]).coordinate addressDictionary:nil];
+    directionsRequest.source = [MKMapItem mapItemForCurrentLocation];
+    directionsRequest.destination = [[MKMapItem alloc] initWithPlacemark:destination];
+    directionsRequest.transportType = MKDirectionsTransportTypeWalking;
+    
+    __block MKRoute *routeDetails = nil;
+    MKDirections *directions = [[MKDirections alloc] initWithRequest:directionsRequest];
+    [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
+        if (error) {
+            
+        } else {
+            routeDetails = response.routes.lastObject;
+            [self.bikeNowView.mapView addOverlay:routeDetails.polyline];
+        }
+    }];
 }
 
 - (void)_handleErrorResponse:(NSError *)error
@@ -196,6 +217,19 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
         annotationView.annotation = annotation;
         
         return annotationView;
+    } else {
+        return nil;
+    }
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolyline *route = overlay;
+        MKPolylineRenderer *routeRenderer = [[MKPolylineRenderer alloc] initWithPolyline:route];
+        routeRenderer.strokeColor = [UIColor blueColor];
+        routeRenderer.lineWidth = 2.0f;
+        return routeRenderer;
     } else {
         return nil;
     }

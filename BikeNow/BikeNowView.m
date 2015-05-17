@@ -10,7 +10,7 @@
 
 @interface BikeNowView ()
 @property (nonatomic) UIButton *reloadButton;
-@property (nonatomic) MKMapView *mapView;
+@property (nonatomic, readwrite) MKMapView *mapView;
 @end
 
 @implementation BikeNowView
