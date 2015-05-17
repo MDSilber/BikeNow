@@ -32,6 +32,16 @@
     return self;
 }
 
+- (NSString *)title
+{
+    return self.stationName;
+}
+
+- (NSString *)subtitle
+{
+    return [NSString stringWithFormat:@"%lu bikes, %lu docks", (unsigned long)self.bikesAvailable, (unsigned long)self.docksAvailable];
+}
+
 - (void)_setUpForPhiladelphiaStationWithJSON:(NSDictionary *)json
 {
     NSArray *coordinates = json[@"geometry"][@"coordinates"];

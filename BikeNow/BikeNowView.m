@@ -32,6 +32,8 @@
         [self addSubview:_reloadButton];
         
         _mapView = [MKMapView new];
+        _mapView.showsUserLocation = YES;
+        _mapView.showsPointsOfInterest = NO;
         [self addSubview:_mapView];
     }
     
@@ -48,6 +50,10 @@
 
 - (void)updateWithStations:(NSArray *)stations location:(CLLocation *)location
 {
+    for (id<MKAnnotation> annotation in stations) {
+        [self.mapView addAnnotation:annotation];
+    }
+
     self.mapView.centerCoordinate = location.coordinate;
     self.mapView.region = MKCoordinateRegionMakeWithDistance(location.coordinate, 500, 500);
 }

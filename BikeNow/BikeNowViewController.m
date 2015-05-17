@@ -183,6 +183,24 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     
 }
 
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[BikeStation class]]) {
+        MKPinAnnotationView *annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"annotation"];
+        
+        if (!annotationView) {
+            annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"annotation"];
+        }
+
+        annotationView.canShowCallout = YES;
+        annotationView.annotation = annotation;
+        
+        return annotationView;
+    } else {
+        return nil;
+    }
+}
+
 #pragma mark - Helper methods
 
 - (NSString *)_urlForCity:(StationCity)city

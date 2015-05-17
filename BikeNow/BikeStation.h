@@ -17,8 +17,10 @@ typedef NS_ENUM(NSUInteger, StationCity) {
 };
 
 @import CoreLocation;
+@import MapKit;
 
-@interface BikeStation : NSObject
+@interface BikeStation : NSObject <MKAnnotation>
+
 @property (nonatomic, readonly) NSString *addressStreet;
 @property (nonatomic, readonly) NSString *addressCity;
 @property (nonatomic, readonly) NSString *addressState;
@@ -28,9 +30,12 @@ typedef NS_ENUM(NSUInteger, StationCity) {
 @property (nonatomic, readonly) NSString *stationID;
 @property (nonatomic, readonly) NSString *stationName;
 @property (nonatomic, readonly) NSUInteger totalDocks;
-@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, readonly) BOOL inService;
 @property (nonatomic, readonly) StationCity stationCity;
+
+@property (nonatomic, readonly, copy) NSString *title;
+@property (nonatomic, readonly, copy) NSString *subtitle;
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 + (BikeStation *)stationForJSON:(NSDictionary *)json stationCity:(StationCity)stationCity;
 
