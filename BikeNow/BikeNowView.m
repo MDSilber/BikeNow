@@ -46,9 +46,16 @@
     }
 }
 
+- (void)updateWithStations:(NSArray *)stations location:(CLLocation *)location
+{
+    self.mapView.centerCoordinate = location.coordinate;
+    self.mapView.region = MKCoordinateRegionMakeWithDistance(location.coordinate, 500, 500);
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    self.mapView.frame = self.bounds;
 }
 
 #pragma mark - Button actions

@@ -18,4 +18,6 @@
 
 @interface BikeNowView : UIView
 @property (nonatomic, weak) id<BikeNowViewDelegate> delegate;
+
+- (void)updateWithStations:(NSArray *)stations location:(CLLocation *)location;
 @end

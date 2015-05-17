@@ -21,10 +21,10 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 @interface BikeNowViewController () <CLLocationManagerDelegate, BikeNowViewDelegate>
 @property (nonatomic) BikeNowView *bikeNowView;
-@property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) AFHTTPRequestOperationManager *requestManager;
 @property (nonatomic) StationCity userCity;
+@property (nonatomic) NSArray *bikeStations;
 @end
 
 @implementation BikeNowViewController
@@ -130,6 +130,12 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     for (NSDictionary *station in stationJSON) {
         [stations addObject:[BikeStation stationForJSON:station stationCity:self.userCity]];
     }
+    
+    self.bikeStations = [stations sortedArrayUsingComparator:^NSComparisonResult(BikeStation *obj1, BikeStation *obj2) {
+        return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate])];
+    }];
+    
+    [self.bikeNowView updateWithStations:self.bikeStations location:self.locationManager.location];
 }
 
 - (void)_handleErrorResponse:(NSError *)error
@@ -159,8 +165,7 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    self.currentLocation = [locations lastObject];
-    self.userCity = [self _closestCityToCoordinate:self.currentLocation.coordinate];
+    self.userCity = [self _closestCityToCoordinate:manager.location.coordinate];
     [self _fetchStationsForCity:self.userCity];
 
     [manager stopUpdatingLocation];
