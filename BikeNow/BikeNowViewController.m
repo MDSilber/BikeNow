@@ -211,27 +211,27 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 - (double)_distanceBetweenCoordinate:(CLLocationCoordinate2D)firstCoordinate andCoordinate:(CLLocationCoordinate2D)secondCoordinate
 {
-    return sqrt(pow(firstCoordinate.latitude - secondCoordinate.latitude, 2) + pow(firstCoordinate.longitude + secondCoordinate.longitude, 2));
+    return sqrt(pow(firstCoordinate.latitude - secondCoordinate.latitude, 2) + pow(firstCoordinate.longitude - secondCoordinate.longitude, 2));
 }
 
 - (CLLocationCoordinate2D)_philadelphiaCoordinate
 {
-    return CLLocationCoordinate2DMake(0, 0);
+    return CLLocationCoordinate2DMake(39.951713, -75.158306);
 }
 
 - (CLLocationCoordinate2D)_newYorkCoordinate
 {
-    return CLLocationCoordinate2DMake(0, 0);
+    return CLLocationCoordinate2DMake(40.766244, -73.981981);
 }
 
 - (CLLocationCoordinate2D)_sanFranciscoCoordinate
 {
-    return CLLocationCoordinate2DMake(0, 0);
+    return CLLocationCoordinate2DMake(37.776933, -122.416898);
 }
 
 - (CLLocationCoordinate2D)_chicagoCoordinate
 {
-    return CLLocationCoordinate2DMake(0, 0);
+    return CLLocationCoordinate2DMake(41.883584, -87.627984);
 }
 
 @end
