@@ -57,6 +57,7 @@
 - (void)_setUpForNonPhiladelphiaStationWithJSON:(NSDictionary *)json
 {
     _stationID = json[@"id"];
+    _stationName = json[@"stationName"];
     _docksAvailable = [json[@"availableDocks"] integerValue];
     _totalDocks = [json[@"totalDocks"] integerValue];
     _coordinate = CLLocationCoordinate2DMake([json[@"latitude"] doubleValue], [json[@"longitude"] doubleValue]);

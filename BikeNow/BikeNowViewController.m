@@ -50,9 +50,10 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     self.userCity = StationCityUnknown;
+    
     self.requestManager = [AFHTTPRequestOperationManager new];
+    self.requestManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
     self.locationManager = [CLLocationManager new];
     self.locationManager.delegate = self;
@@ -91,7 +92,6 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 - (void)_fetchLocation
 {
     [self.locationManager startUpdatingLocation];
-    
 }
 
 - (void)_fetchStationsForCity:(StationCity)city
@@ -104,6 +104,10 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     } else {
         __weak typeof(self) weakSelf = self;
         [self.requestManager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            if ([responseObject isKindOfClass:[NSData class]]) {
+                responseObject = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+            }
             [weakSelf _handleSuccessfulResponse:responseObject];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             [weakSelf _handleErrorResponse:error];
@@ -111,9 +115,21 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     }
 }
 
-- (void)_handleSuccessfulResponse:(id)responseObject
+- (void)_handleSuccessfulResponse:(NSDictionary *)responseObject
 {
+    NSMutableArray *stations = [NSMutableArray new];
+    NSDictionary *stationJSON;
     
+    // Philly
+    if (responseObject[@"features"]) {
+        stationJSON = responseObject[@"features"];
+    } else if (responseObject[@"stationBeanList"]) {
+        stationJSON = responseObject[@"stationBeanList"];
+    }
+    
+    for (NSDictionary *station in stationJSON) {
+        [stations addObject:[BikeStation stationForJSON:station stationCity:self.userCity]];
+    }
 }
 
 - (void)_handleErrorResponse:(NSError *)error
