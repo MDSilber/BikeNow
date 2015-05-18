@@ -19,6 +19,34 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 @import CoreLocation;
 @import MapKit;
 
+typedef NS_ENUM(NSUInteger, StationPathType) {
+    StationPathTypeUnknown,
+    StationPathTypeAll,
+    StationPathTypeBike,
+    StationPathTypeDock
+};
+
+@interface StationDirectionPolyline : NSObject <MKOverlay>
+@property (nonatomic) MKPolyline *path;
+@property (nonatomic) StationPathType pathType;
+@property (nonatomic) CLLocationCoordinate2D coordinate;
+@property (nonatomic) MKMapRect boundingMapRect;
+@end
+
+@implementation StationDirectionPolyline
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return self.path.coordinate;
+}
+
+- (MKMapRect)boundingMapRect
+{
+    return self.path.boundingMapRect;
+}
+
+@end
+
 @interface BikeNowViewController () <CLLocationManagerDelegate, BikeNowViewDelegate>
 @property (nonatomic) BikeNowView *bikeNowView;
 @property (nonatomic) CLLocationManager *locationManager;
@@ -132,17 +160,35 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     }
     
     self.bikeStations = [stations sortedArrayUsingComparator:^NSComparisonResult(BikeStation *obj1, BikeStation *obj2) {
-        return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate])];
+        return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate])];
     }];
     
     [self.bikeNowView updateWithStations:self.bikeStations location:self.locationManager.location];
-    [self _getDirections];
+    [self _getDirectionsForClosestStations];
 }
 
-- (void)_getDirections
+- (void)_getDirectionsForClosestStations
+{
+    int i = 0;
+    while (i < [self.bikeStations count] && ((BikeStation *)self.bikeStations[i]).bikesAvailable == 0) { i++; };
+    BikeStation *closestBikeStation = self.bikeStations[i];
+    
+    i = 0;
+    while (i < [self.bikeStations count] && ((BikeStation *)self.bikeStations[i]).docksAvailable == 0) { i++; };
+    BikeStation *closestDockStation = self.bikeStations[i];
+    
+    if ([closestBikeStation isEqual:closestDockStation]) {
+        [self _getDirectionsToOneStation:closestBikeStation stationType:StationPathTypeAll];
+    } else {
+        [self _getDirectionsToOneStation:closestBikeStation stationType:StationPathTypeBike];
+        [self _getDirectionsToOneStation:closestDockStation stationType:StationPathTypeDock];
+    }
+}
+
+- (void)_getDirectionsToOneStation:(BikeStation *)bikeStation stationType:(StationPathType)stationType
 {
     MKDirectionsRequest *directionsRequest = [MKDirectionsRequest new];
-    MKPlacemark *destination = [[MKPlacemark alloc] initWithCoordinate:((BikeStation *)[self.bikeStations lastObject]).coordinate addressDictionary:nil];
+    MKPlacemark *destination = [[MKPlacemark alloc] initWithCoordinate:bikeStation.coordinate addressDictionary:nil];
     directionsRequest.source = [MKMapItem mapItemForCurrentLocation];
     directionsRequest.destination = [[MKMapItem alloc] initWithPlacemark:destination];
     directionsRequest.transportType = MKDirectionsTransportTypeWalking;
@@ -151,10 +197,13 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
     MKDirections *directions = [[MKDirections alloc] initWithRequest:directionsRequest];
     [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
         if (error) {
-            
+            [self _handleErrorResponse:error];
         } else {
             routeDetails = response.routes.lastObject;
-            [self.bikeNowView.mapView addOverlay:routeDetails.polyline];
+            StationDirectionPolyline *polyline = [StationDirectionPolyline new];
+            polyline.path = routeDetails.polyline;
+            polyline.pathType = stationType;
+            [self.bikeNowView.mapView addOverlay:polyline];
         }
     }];
 }
@@ -224,10 +273,18 @@ static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
-    if ([overlay isKindOfClass:[MKPolyline class]]) {
-        MKPolyline *route = overlay;
-        MKPolylineRenderer *routeRenderer = [[MKPolylineRenderer alloc] initWithPolyline:route];
-        routeRenderer.strokeColor = [UIColor blueColor];
+    if ([overlay isKindOfClass:[StationDirectionPolyline class]]) {
+        StationDirectionPolyline *route = overlay;
+        MKPolylineRenderer *routeRenderer = [[MKPolylineRenderer alloc] initWithPolyline:route.path];
+
+        if (route.pathType == StationPathTypeDock) {
+            routeRenderer.strokeColor = [UIColor redColor];
+        } else if (route.pathType == StationPathTypeBike) {
+            routeRenderer.strokeColor = [UIColor blueColor];
+        } else {
+            routeRenderer.strokeColor = [UIColor purpleColor];
+        }
+
         routeRenderer.lineWidth = 2.0f;
         return routeRenderer;
     } else {
