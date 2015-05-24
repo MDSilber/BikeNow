@@ -312,6 +312,8 @@ static NSString *dockRouteKey = @"dock_route";
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
     if ([annotation isKindOfClass:[BikeStation class]]) {
+        BikeStation *bikeAnnotation = (BikeStation *)annotation;
+
         MKPinAnnotationView *annotationView = (MKPinAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"annotation"];
         
         if (!annotationView) {
@@ -321,6 +323,14 @@ static NSString *dockRouteKey = @"dock_route";
         annotationView.canShowCallout = YES;
         annotationView.annotation = annotation;
         
+        if (bikeAnnotation.docksAvailable == 0) {
+            annotationView.pinColor = MKPinAnnotationColorGreen;
+        } else if (bikeAnnotation.bikesAvailable == 0) {
+            annotationView.pinColor = MKPinAnnotationColorPurple;
+        } else {
+            annotationView.pinColor = MKPinAnnotationColorRed;
+        }
+
         return annotationView;
     } else {
         return nil;
