@@ -16,15 +16,11 @@ static NSString *stationChicagoURL = @"http://www.divvybikes.com/stations/json";
 static NSString *stationSFURL = @"http://www.bayareabikeshare.com/stations/json";
 static NSString *stationPhillyURL = @"https://api.phila.gov/bike-share-stations/v1";
 
+static NSString *bikeRouteKey = @"bike_route";
+static NSString *dockRouteKey = @"dock_route";
+
 @import CoreLocation;
 @import MapKit;
-
-typedef NS_ENUM(NSUInteger, StationPathType) {
-    StationPathTypeUnknown,
-    StationPathTypeAll,
-    StationPathTypeBike,
-    StationPathTypeDock
-};
 
 @interface StationDirectionPolyline : NSObject <MKOverlay>
 @property (nonatomic) MKPolyline *path;
@@ -53,6 +49,12 @@ typedef NS_ENUM(NSUInteger, StationPathType) {
 @property (nonatomic) AFHTTPRequestOperationManager *requestManager;
 @property (nonatomic) StationCity userCity;
 @property (nonatomic) NSArray *bikeStations;
+
+@property (nonatomic) BikeStation *currentBikeStation;
+@property (nonatomic) BikeStation *currentDockStation;
+@property (nonatomic) StationDirectionPolyline *currentBikeRoute;
+@property (nonatomic) StationDirectionPolyline *currentDockRoute;
+@property (nonatomic) BOOL bikeDirectionsRequestActive;
 @end
 
 @implementation BikeNowViewController
@@ -178,34 +180,71 @@ typedef NS_ENUM(NSUInteger, StationPathType) {
     BikeStation *closestDockStation = self.bikeStations[i];
     
     if ([closestBikeStation isEqual:closestDockStation]) {
-        [self _getDirectionsToOneStation:closestBikeStation stationType:StationPathTypeAll];
+        [self _getDirectionsToStation:closestBikeStation stationType:StationPathTypeAll];
     } else {
-        [self _getDirectionsToOneStation:closestBikeStation stationType:StationPathTypeBike];
-        [self _getDirectionsToOneStation:closestDockStation stationType:StationPathTypeDock];
+        [self _getDirectionsToStation:closestBikeStation stationType:StationPathTypeBike];
+        [self _getDirectionsToStation:closestDockStation stationType:StationPathTypeDock];
     }
 }
 
-- (void)_getDirectionsToOneStation:(BikeStation *)bikeStation stationType:(StationPathType)stationType
+- (void)_getDirectionsToStation:(BikeStation *)bikeStation stationType:(StationPathType)stationType
 {
-    MKDirectionsRequest *directionsRequest = [MKDirectionsRequest new];
-    MKPlacemark *destination = [[MKPlacemark alloc] initWithCoordinate:bikeStation.coordinate addressDictionary:nil];
-    directionsRequest.source = [MKMapItem mapItemForCurrentLocation];
-    directionsRequest.destination = [[MKMapItem alloc] initWithPlacemark:destination];
-    directionsRequest.transportType = MKDirectionsTransportTypeWalking;
-    
-    __block MKRoute *routeDetails = nil;
-    MKDirections *directions = [[MKDirections alloc] initWithRequest:directionsRequest];
-    [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
-        if (error) {
-            [self _handleErrorResponse:error];
-        } else {
-            routeDetails = response.routes.lastObject;
-            StationDirectionPolyline *polyline = [StationDirectionPolyline new];
-            polyline.path = routeDetails.polyline;
-            polyline.pathType = stationType;
-            [self.bikeNowView.mapView addOverlay:polyline];
-        }
-    }];
+    if (stationType == StationPathTypeBike && [self.currentBikeStation isEqual:bikeStation]) {
+        [self.bikeNowView.mapView removeOverlays:self.bikeNowView.mapView.overlays];
+        [self.bikeNowView.mapView addOverlay:self.currentBikeRoute];
+    } else if (stationType == StationPathTypeDock && [self.currentDockStation isEqual:bikeStation]) {
+        [self.bikeNowView.mapView removeOverlays:self.bikeNowView.mapView.overlays];
+        [self.bikeNowView.mapView addOverlay:self.currentDockRoute];
+    } else {
+        self.bikeDirectionsRequestActive = (stationType == StationPathTypeBike);
+        MKDirectionsRequest *directionsRequest = [MKDirectionsRequest new];
+        MKPlacemark *destination = [[MKPlacemark alloc] initWithCoordinate:bikeStation.coordinate addressDictionary:nil];
+        directionsRequest.source = [MKMapItem mapItemForCurrentLocation];
+        directionsRequest.destination = [[MKMapItem alloc] initWithPlacemark:destination];
+        directionsRequest.transportType = MKDirectionsTransportTypeWalking;
+        
+        __block MKRoute *routeDetails = nil;
+        MKDirections *directions = [[MKDirections alloc] initWithRequest:directionsRequest];
+        [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
+            self.bikeDirectionsRequestActive = NO;
+
+            if (error) {
+                [self _handleErrorResponse:error];
+            } else {
+                routeDetails = response.routes.lastObject;
+                StationDirectionPolyline *polyline = [StationDirectionPolyline new];
+                polyline.path = routeDetails.polyline;
+                polyline.pathType = stationType;
+                
+                switch (stationType) {
+                    case StationPathTypeAll: {
+                        self.currentBikeStation = bikeStation;
+                        self.currentDockStation = bikeStation;
+                        self.currentBikeRoute = polyline;
+                        self.currentDockRoute = polyline;
+                        break;
+                    }
+                    case StationPathTypeBike: {
+                        self.currentBikeStation = bikeStation;
+                        self.currentBikeRoute = polyline;
+                        break;
+                    }
+                    case StationPathTypeDock: {
+                        self.currentDockStation = bikeStation;
+                        self.currentDockRoute = polyline;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+                
+                if ([self.bikeNowView.mapView.overlays count] == 0 && !self.bikeDirectionsRequestActive) {
+                    [self.bikeNowView.mapView addOverlay:polyline];
+                }
+            }
+        }];
+    }
 }
 
 - (void)_handleErrorResponse:(NSError *)error
@@ -251,6 +290,15 @@ typedef NS_ENUM(NSUInteger, StationPathType) {
 - (void)bikeNowViewShouldReload:(BikeNowView *)bikeNowView
 {
     
+}
+
+- (void)bikeNowView:(BikeNowView *)bikeNowView setPathType:(StationPathType)pathType
+{
+    if (pathType == StationPathTypeBike) {
+        [self _getDirectionsToStation:self.currentBikeStation stationType:pathType];
+    } else if (pathType == StationPathTypeDock) {
+        [self _getDirectionsToStation:self.currentDockStation stationType:pathType];
+    }
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation

@@ -10,10 +10,18 @@
 
 @import MapKit;
 
+typedef NS_ENUM(NSUInteger, StationPathType) {
+    StationPathTypeUnknown,
+    StationPathTypeAll,
+    StationPathTypeBike,
+    StationPathTypeDock
+};
+
 @class BikeNowView;
 
 @protocol BikeNowViewDelegate <MKMapViewDelegate>
 - (void)bikeNowViewShouldReload:(BikeNowView *)bikeNowView;
+- (void)bikeNowView:(BikeNowView *)bikeNowView setPathType:(StationPathType)pathType;
 @end
 
 @interface BikeNowView : UIView

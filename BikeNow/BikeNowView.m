@@ -9,6 +9,8 @@
 #import "BikeNowView.h"
 
 @interface BikeNowView ()
+@property (nonatomic) UIView *buttonPanel;
+@property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) UIButton *reloadButton;
 @property (nonatomic, readwrite) MKMapView *mapView;
 @end
@@ -27,14 +29,23 @@
     if (self) {
         self.backgroundColor = [UIColor blueColor];
         
-        _reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_reloadButton addTarget:self action:@selector(_reload:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:_reloadButton];
-        
         _mapView = [MKMapView new];
         _mapView.showsUserLocation = YES;
         _mapView.showsPointsOfInterest = NO;
         [self addSubview:_mapView];
+
+        _buttonPanel = [UIView new];
+        _buttonPanel.backgroundColor = [UIColor whiteColor];
+        [self addSubview:_buttonPanel];
+        
+        _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Bike", @"Dock"]];
+        _segmentedControl.selectedSegmentIndex = 0;
+        [_segmentedControl addTarget:self action:@selector(_segmentedControlValueChanged:) forControlEvents:UIControlEventValueChanged];
+        [_buttonPanel addSubview:_segmentedControl];
+        
+        _reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_reloadButton addTarget:self action:@selector(_reload:) forControlEvents:UIControlEventTouchUpInside];
+        [_buttonPanel addSubview:_reloadButton];
     }
     
     return self;
@@ -61,10 +72,32 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    
+    self.buttonPanel.frame = CGRectMake(0.0, 20.0, CGRectGetWidth(self.bounds), 44.0f);
+    
+    self.segmentedControl.frame = CGRectMake(8.0f, floorf((CGRectGetHeight(self.buttonPanel.bounds) - CGRectGetHeight(self.segmentedControl.bounds))/2.0f), CGRectGetWidth(self.segmentedControl.bounds), CGRectGetHeight(self.segmentedControl.bounds));
+    
     self.mapView.frame = self.bounds;
 }
 
 #pragma mark - Button actions
+
+- (void)_segmentedControlValueChanged:(UISegmentedControl *)sender
+{
+    StationPathType pathType = StationPathTypeUnknown;
+    switch (sender.selectedSegmentIndex) {
+        case 0:
+            pathType = StationPathTypeBike;
+            break;
+        case 1:
+            pathType = StationPathTypeDock;
+            break;
+        default:
+            break;
+    }
+    
+    [self.delegate bikeNowView:self setPathType:pathType];
+}
 
 - (void)_reload:(id)sender
 {
