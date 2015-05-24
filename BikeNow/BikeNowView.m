@@ -44,6 +44,7 @@
         [_buttonPanel addSubview:_segmentedControl];
         
         _reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_reloadButton setImage:[UIImage imageNamed:@"reload_button"] forState:UIControlStateNormal];
         [_reloadButton addTarget:self action:@selector(_reload:) forControlEvents:UIControlEventTouchUpInside];
         [_buttonPanel addSubview:_reloadButton];
     }
@@ -59,12 +60,15 @@
     }
 }
 
-- (void)updateWithStations:(NSArray *)stations location:(CLLocation *)location
+- (void)updateWithStations:(NSArray *)stations
 {
     for (id<MKAnnotation> annotation in stations) {
         [self.mapView addAnnotation:annotation];
     }
+}
 
+- (void)updatewithLocation:(CLLocation *)location
+{
     self.mapView.centerCoordinate = location.coordinate;
     self.mapView.region = MKCoordinateRegionMakeWithDistance(location.coordinate, 500, 500);
 }
@@ -76,6 +80,7 @@
     self.buttonPanel.frame = CGRectMake(0.0, 20.0, CGRectGetWidth(self.bounds), 44.0f);
     
     self.segmentedControl.frame = CGRectMake(8.0f, floorf((CGRectGetHeight(self.buttonPanel.bounds) - CGRectGetHeight(self.segmentedControl.bounds))/2.0f), CGRectGetWidth(self.segmentedControl.bounds), CGRectGetHeight(self.segmentedControl.bounds));
+    self.reloadButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - 48.0f, 6.0f, 32.0f, 32.0f);
     
     self.mapView.frame = self.bounds;
 }

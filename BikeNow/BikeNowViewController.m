@@ -165,7 +165,7 @@ static NSString *dockRouteKey = @"dock_route";
         return [@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj1.coordinate]) compare:@([self _distanceBetweenCoordinate:self.locationManager.location.coordinate andCoordinate:obj2.coordinate])];
     }];
     
-    [self.bikeNowView updateWithStations:self.bikeStations location:self.locationManager.location];
+    [self.bikeNowView updateWithStations:self.bikeStations];
     [self _getDirectionsForClosestStations];
 }
 
@@ -275,6 +275,7 @@ static NSString *dockRouteKey = @"dock_route";
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     self.userCity = [self _closestCityToCoordinate:manager.location.coordinate];
+    [self.bikeNowView updatewithLocation:manager.location];
     [self _fetchStationsForCity:self.userCity];
 
     [manager stopUpdatingLocation];
@@ -289,7 +290,14 @@ static NSString *dockRouteKey = @"dock_route";
 
 - (void)bikeNowViewShouldReload:(BikeNowView *)bikeNowView
 {
-    
+    self.currentBikeRoute = nil;
+    self.currentBikeStation = nil;
+    self.currentDockRoute = nil;
+    self.currentDockStation = nil;
+
+    [self.bikeNowView.mapView removeAnnotations:self.bikeNowView.mapView.annotations];
+    [self.bikeNowView.mapView removeOverlays:self.bikeNowView.mapView.overlays];
+    [self _fetchLocation];
 }
 
 - (void)bikeNowView:(BikeNowView *)bikeNowView setPathType:(StationPathType)pathType

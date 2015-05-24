@@ -28,5 +28,6 @@ typedef NS_ENUM(NSUInteger, StationPathType) {
 @property (nonatomic, weak) id<BikeNowViewDelegate> delegate;
 @property (nonatomic, readonly) MKMapView *mapView;
 
-- (void)updateWithStations:(NSArray *)stations location:(CLLocation *)location;
+- (void)updateWithStations:(NSArray *)stations;
+- (void)updatewithLocation:(CLLocation *)location;
 @end
